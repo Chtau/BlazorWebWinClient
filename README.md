@@ -3,6 +3,14 @@ Basic Blazor function and usage of reflection to execute .NET Assembly functions
 
 You can try out the [sample Website](https://chtau.github.io/BlazorWeb/)
 
+This is mostly used to understand and Test the functions of the Blazor Framework.
+
+* Blazor Markup
+* Access Local Storage
+* Javescript Interop
+* Assembly Reflection
+
+
 ## Getting Started
 
 Import an exsting .NET Assembly File (currently only Tested with Framework Version 4.7). 
