@@ -18,7 +18,9 @@ namespace WebWinClient
         public static T ReadStorage<T>(string key)
         {
             string strValue = RegisteredFunction.Invoke<string>($"readStorage", key);
-            return JsonConvert.DeserializeObject<T>(strValue);
+            if (!string.IsNullOrWhiteSpace(strValue))
+                return JsonConvert.DeserializeObject<T>(strValue);
+            return default;
         }
 
         public static void WriteStorage(string key, string value)

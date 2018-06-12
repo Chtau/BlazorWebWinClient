@@ -44,9 +44,12 @@ namespace WebWinClient.Terminal
         public static void StorageLoadModules()
         {
             List<byte[]> assMods = Storage.ReadStorage<List<byte[]>>(STORAGE_MODULE_KEY);
-            foreach (var item in assMods)
+            if (assMods != null)
             {
-                AddTerminalModules(BuildModule.FromRawData(item));
+                foreach (var item in assMods)
+                {
+                    AddTerminalModules(BuildModule.FromRawData(item));
+                }
             }
         }
 
