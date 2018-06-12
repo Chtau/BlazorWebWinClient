@@ -1,0 +1,100 @@
+﻿@page "/terminal"
+@using WebWinClient.Terminal
+@using Microsoft.AspNetCore.Blazor.Browser.Interop
+
+<div class="shell-wrap">
+    <p class="shell-top-bar">/webwinclient/terminal/</p>
+    <ul class="shell-body">
+        @foreach (var line in terminalCommands.TerminalLines)
+        {
+            @if (line.Readonly)
+            {
+                <li tabindex="-1" class="@GetLIClass(line)">
+                    @line.Text
+                    @if (HasSystemSubText(line))
+                    {
+                        <span class="col">@line.SubText</span>
+                    }
+                </li>
+            }
+            else
+            {
+                <li>
+                    <div style="display:flex;">
+                        @if (!string.IsNullOrWhiteSpace(terminalCommands.ActiveNamespace))
+                        {
+                            <span style="align-self: center;">@terminalCommands.GetActiveDisplayNamespace()</span>
+                        }
+                        <input type="text" id="cmdUserInput" onkeyup="@OnKeyUp" bind="@currentInput" ref="@inputElement" autofocus />
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+
+
+@functions {
+
+    ElementRef inputElement;
+    Terminal terminalCommands = null;
+    string currentInput = "";
+
+    protected override void OnInit()
+    {
+        terminalCommands = new Terminal();
+        base.OnInit();
+    }
+
+    protected override void OnAfterRender()
+    {
+        base.OnAfterRender();
+        ScrollBottom();
+    }
+
+    public void OnKeyUp(Microsoft.AspNetCore.Blazor.UIKeyboardEventArgs args)
+    {
+        if (args.Code == "Enter")
+        {
+            terminalCommands.AddLine(new TerminalLine
+            {
+                Text = currentInput
+            });
+            currentInput = "";
+            terminalCommands.ResetInputHistory();
+        } else if (args.Code == "ArrowUp")
+        {
+            currentInput = terminalCommands.GetInputHistory(+1);
+        } else if (args.Code == "ArrowDown")
+        {
+            currentInput = terminalCommands.GetInputHistory(-1);
+        }
+    }
+
+    public string GetLIClass(TerminalLine terminalLine)
+    {
+        if (terminalLine.IsSystem)
+        {
+            return "shell-system-li";
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    public bool HasSystemSubText(TerminalLine terminalLine)
+    {
+        if (terminalLine.IsSystem && !string.IsNullOrWhiteSpace(terminalLine.SubText))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void ScrollBottom()
+    {
+        RegisteredFunction.Invoke<bool>($"scrollIntoView", inputElement);
+    }
+}

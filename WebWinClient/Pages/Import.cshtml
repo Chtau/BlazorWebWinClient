@@ -1,0 +1,110 @@
+﻿@page "/import"
+@using System.IO;
+@using Microsoft.AspNetCore.Blazor.Browser.Interop
+
+<h1>Import .NET Assembly Files</h1>
+<br /><br />
+<input type='file' class="btn btn-primary" accept='.dll' id="importFile" onchange='@ImportFile' ref="@inputFile" />
+<br /><br />
+<p>Information</p>
+<textarea cols="100" rows="5">@OutputAssemblyInfo</textarea>
+<br /><br />
+<p>Loaded Modules</p>
+<ul>
+    @foreach (var module in Terminal.Terminal.TerminalModules)
+    {
+        <li>
+            <button type="button" class="btn btn-danger" onclick="@(() => DeleteModule(module))">Delete</button>
+            <span>@module.Namespace</span>
+        </li>
+    }
+</ul>
+<br /><br />
+<div>
+    <p>Browser Storage Modules</p>
+    <button type="button" class="btn btn-success" onclick="@(() => SaveModules())">Save Module</button>
+    <button type="button" class="btn btn-secondary" onclick="@(() => LoadModules())">Load Module</button>
+    <button type="button" class="btn btn-danger" onclick="@(() => ClearModules())">Clear Module Storage</button>
+</div>
+
+<div class="alert-wrapper" style="visibility:@AlertVisibility">
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>@AlertTitle</strong> @AlertMessage
+        <button type="button" class="close" onclick="@(() => CloseAlert())" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+
+@functions {
+
+    string OutputAssemblyInfo { get; set; }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+
+        if (Terminal.Terminal.TerminalModules.Count == 0)
+        {
+            LoadModules();
+        }
+    }
+
+    ElementRef inputFile;
+    public async Task ImportFile()
+    {
+        try
+        {
+            byte[] buffer = await RegisteredFunction.InvokeAsync<byte[]>("readFile", "importFile");
+
+            Terminal.Terminal.AddTerminalModules(Terminal.BuildModule.FromRawData(buffer));
+            OutputAssemblyInfo += "Assembly loaded";
+            ShowAlert("File Import", "Assembly File successful loaded");
+        }
+        catch (Exception ex)
+        {
+            OutputAssemblyInfo += ex.ToString();
+        }
+    }
+
+    public void DeleteModule(Terminal.Interfaces.ITerminalModule module)
+    {
+        if (Terminal.Terminal.TerminalModules.Any(x => x.Namespace == module.Namespace))
+        {
+            Terminal.Terminal.TerminalModules.Remove(module);
+        }
+    }
+
+    public void SaveModules()
+    {
+        Terminal.Terminal.StorageSaveModules();
+        ShowAlert("Local Storage", "Modules are saved to the Storage");
+    }
+
+    public void LoadModules()
+    {
+        Terminal.Terminal.StorageLoadModules();
+        ShowAlert("Local Storage", "Modules are loaded from the Storage");
+    }
+
+    public void ClearModules()
+    {
+        Terminal.Terminal.StorageClearModules();
+        ShowAlert("Local Storage", "Modules are removed from the Storage");
+    }
+
+    string AlertVisibility = "hidden";
+    string AlertTitle = "";
+    string AlertMessage = "";
+    public void CloseAlert()
+    {
+        AlertVisibility = "hidden";
+    }
+
+    public void ShowAlert(string title, string message)
+    {
+        AlertTitle = title;
+        AlertMessage = message;
+        AlertVisibility = "visible";
+    }
+}
