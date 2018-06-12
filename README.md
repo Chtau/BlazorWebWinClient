@@ -11,6 +11,7 @@ The Platform Target for the DLL must be x64, x86 or Any Platform would give you 
 ![Import Assembly in Blazor](https://raw.githubusercontent.com/Chtau/BlazorWebWinClient/master/docs/img/BlazorWebWinClient_Import_DLL.PNG)
 
 Imported Assemblies can be save in the local Storage. If the local Storage already contains any stored Assemblies they will be automatic loaded.
+(You can download DLL File for Testing from the samples Folder)
 
 In the Terminal you can use "?" or "help" to see all Commands.
 
