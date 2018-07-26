@@ -27,5 +27,8 @@ In the Terminal you can use "?" or "help" to see all Commands.
 
 # About
 
-Current Version 0.1.0
-Build on the [Blazor](https://github.com/aspnet/Blazor) Version 0.4.0
+~~Current Version 0.1.0
+Build on the [Blazor](https://github.com/aspnet/Blazor) Version 0.4.0~~
+
+Version 0.2.0
+Update to [Blazor](https://github.com/aspnet/Blazor) Version 0.5.0
