@@ -37,13 +37,13 @@ namespace WebWinClient.Terminal
                 }
             }
 
-            Storage.WriteStorage<List<byte[]>>(STORAGE_MODULE_KEY, assMods);
+            Storage.WriteStorage<List<byte[]>>(STORAGE_MODULE_KEY, assMods).ConfigureAwait(false);
 
         }
 
-        public static void StorageLoadModules()
+        public static async Task StorageLoadModules()
         {
-            List<byte[]> assMods = Storage.ReadStorage<List<byte[]>>(STORAGE_MODULE_KEY);
+            List<byte[]> assMods = await Storage.ReadStorage<List<byte[]>>(STORAGE_MODULE_KEY);
             if (assMods != null)
             {
                 foreach (var item in assMods)
@@ -55,7 +55,7 @@ namespace WebWinClient.Terminal
 
         public static void StorageClearModules()
         {
-            Storage.RemoveStorage(STORAGE_MODULE_KEY);
+            Storage.RemoveStorage(STORAGE_MODULE_KEY).ConfigureAwait(false);
         }
 
         public static void AddDefaults()
@@ -69,7 +69,7 @@ namespace WebWinClient.Terminal
             TerminalCommands.Add(new Commands.CommandCD());
             TerminalCommands.Add(new Commands.CommandEXEC());
 
-            StorageLoadModules();
+            StorageLoadModules().ConfigureAwait(false);
         }
 
         private int InputHistoryIndex = 0;

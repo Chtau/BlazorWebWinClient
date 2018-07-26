@@ -2,40 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Blazor.Browser.Interop;
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
 
 namespace WebWinClient
 {
     public static class Storage
     {
-        public static void WriteStorage<T>(string key, T value)
+        public static async Task WriteStorage<T>(string key, T value)
         {
             string strValue = JsonConvert.SerializeObject(value);
-            RegisteredFunction.Invoke<bool>($"writeStorage", key, strValue);
+            await JSRuntime.Current.InvokeAsync<bool>("storage.writeStorage", key, strValue);
         }
 
-        public static T ReadStorage<T>(string key)
+        public static async Task<T> ReadStorage<T>(string key)
         {
-            string strValue = RegisteredFunction.Invoke<string>($"readStorage", key);
+            string strValue = await JSRuntime.Current.InvokeAsync<string>("storage.readStorage", key);
             if (!string.IsNullOrWhiteSpace(strValue))
                 return JsonConvert.DeserializeObject<T>(strValue);
             return default;
         }
 
-        public static void WriteStorage(string key, string value)
+        public static async Task WriteStorage(string key, string value)
         {
-            RegisteredFunction.Invoke<bool>($"writeStorage", key, value);
+            await JSRuntime.Current.InvokeAsync<bool>($"storage.writeStorage", key, value);
         }
 
-        public static string ReadStorage(string key)
+        public static async Task<string> ReadStorage(string key)
         {
-            return RegisteredFunction.Invoke<string>($"readStorage", key);
+            return await JSRuntime.Current.InvokeAsync<string>($"storage.readStorage", key);
         }
 
-        public static void RemoveStorage(string key)
+        public static async Task RemoveStorage(string key)
         {
-            RegisteredFunction.Invoke<bool>($"removeStorage", key);
+            await JSRuntime.Current.InvokeAsync<bool>($"storage.removeStorage", key);
         }
     }
 }

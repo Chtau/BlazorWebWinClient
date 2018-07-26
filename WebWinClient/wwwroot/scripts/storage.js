@@ -1,17 +1,15 @@
-﻿Blazor.registerFunction('readStorage', (key) => {
-    return localStorage.getItem(key);
-});
-
-Blazor.registerFunction('writeStorage', (key, value) => {
-    localStorage.setItem(key, value);
-    return true;
-});
-
-Blazor.registerFunction('removeStorage', (key) => {
-    localStorage.removeItem(key);
-    return true;
-});
-
-
+﻿window.storage = {
+    readStorage: function (key) {
+        return localStorage.getItem(key);
+    },
+    writeStorage: function (key, value) {
+        localStorage.setItem(key, value);
+        return true;
+    },
+    removeStorage: function (key) {
+        localStorage.removeItem(key);
+        return true;
+    }
+}
 
 

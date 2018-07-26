@@ -1,6 +1,6 @@
 ﻿@page "/import"
 @using System.IO;
-@using Microsoft.AspNetCore.Blazor.Browser.Interop
+@using Microsoft.JSInterop;
 
 <h1>Import .NET Assembly Files</h1>
 <br /><br />
@@ -50,16 +50,20 @@
     {
         try
         {
-            byte[] buffer = await RegisteredFunction.InvokeAsync<byte[]>("readFile", "importFile");
-
-            Terminal.Terminal.AddTerminalModules(Terminal.BuildModule.FromRawData(buffer));
+            bool result = await JSRuntime.Current.InvokeAsync<bool>("terminal.readFile", "importFile", new DotNetObjectRef(this));
             OutputAssemblyInfo += "Assembly loaded";
-            ShowAlert("File Import", "Assembly File successful loaded");
+            ShowAlert("Import File", "Assembly loaded");
         }
         catch (Exception ex)
         {
             OutputAssemblyInfo += ex.ToString();
         }
+    }
+
+    [JSInvokable]
+    public void ReadFileReturn(byte[] buffer)
+    {
+        Terminal.Terminal.AddTerminalModules(Terminal.BuildModule.FromRawData(buffer));
     }
 
     public void DeleteModule(Terminal.Interfaces.ITerminalModule module)
@@ -76,9 +80,9 @@
         ShowAlert("Local Storage", "Modules are saved to the Storage");
     }
 
-    public void LoadModules()
+    public async Task LoadModules()
     {
-        Terminal.Terminal.StorageLoadModules();
+        await Terminal.Terminal.StorageLoadModules();
         ShowAlert("Local Storage", "Modules are loaded from the Storage");
     }
 

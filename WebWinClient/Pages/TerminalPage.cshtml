@@ -1,6 +1,6 @@
 ﻿@page "/terminal"
-@using WebWinClient.Terminal
-@using Microsoft.AspNetCore.Blazor.Browser.Interop
+@using WebWinClient.Terminal;
+@using Microsoft.JSInterop;
 
 <div class="shell-wrap">
     <p class="shell-top-bar">/webwinclient/terminal/</p>
@@ -50,7 +50,7 @@
     protected override void OnAfterRender()
     {
         base.OnAfterRender();
-        ScrollBottom();
+        ScrollBottom().ConfigureAwait(false);
     }
 
     public void OnKeyUp(Microsoft.AspNetCore.Blazor.UIKeyboardEventArgs args)
@@ -93,8 +93,8 @@
         return false;
     }
 
-    public void ScrollBottom()
+    public async Task ScrollBottom()
     {
-        RegisteredFunction.Invoke<bool>($"scrollIntoView", inputElement);
+        await JSRuntime.Current.InvokeAsync<bool>($"terminal.scrollIntoView", inputElement);
     }
 }
