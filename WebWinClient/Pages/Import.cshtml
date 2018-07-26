@@ -51,8 +51,15 @@
         try
         {
             bool result = await JSRuntime.Current.InvokeAsync<bool>("terminal.readFile", "importFile", new DotNetObjectRef(this));
-            OutputAssemblyInfo += "Assembly loaded";
-            ShowAlert("Import File", "Assembly loaded");
+
+            if (result)
+            {
+                OutputAssemblyInfo = "Assembly loaded";
+                ShowAlert("Import File", "Assembly loaded");
+            } else
+            {
+                OutputAssemblyInfo = "JS FileReader error";
+            }
         }
         catch (Exception ex)
         {
@@ -63,7 +70,14 @@
     [JSInvokable]
     public void ReadFileReturn(byte[] buffer)
     {
-        Terminal.Terminal.AddTerminalModules(Terminal.BuildModule.FromRawData(buffer));
+        try
+        {
+            Terminal.Terminal.AddTerminalModules(Terminal.BuildModule.FromRawData(buffer));
+        }
+        catch (Exception ex)
+        {
+            OutputAssemblyInfo += ex.ToString();
+        }
     }
 
     public void DeleteModule(Terminal.Interfaces.ITerminalModule module)
