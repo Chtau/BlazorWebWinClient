@@ -14,6 +14,8 @@ namespace WebWinClient
                 // Add any custom services here
             });
 
+            Terminal.Terminal.AddDefaults();
+
             new BrowserRenderer(serviceProvider).AddComponent<App>("app");
         }
     }

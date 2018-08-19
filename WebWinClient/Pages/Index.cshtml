@@ -1,7 +1,65 @@
 ﻿@page "/"
+@inject HttpClient Http
 
-<h1>Hello, world!</h1>
+<h1>Web Windows Client</h1>
 
-Welcome to your new app.
+Reflect a Windows Assembly to execute its functions.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<br /><br />
+<p>Running on @currentAssemblyName</p>
+<br /><br />
+<p>Import extern Assembly</p>
+@if (frameworkStates == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Version</th>
+                <th>Build</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var state in frameworkStates)
+            {
+                <tr>
+                    <td>@state.Date.ToShortDateString()</td>
+                    <td>@state.Version</td>
+                    <td>@state.Build</td>
+                    <td>@state.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@functions {
+    FrameworkState[] frameworkStates;
+    string currentAssemblyName = "";
+
+    protected override async Task OnInitAsync()
+    {
+        OnCurrentInfo();
+        frameworkStates = await Http.GetJsonAsync<FrameworkState[]>("static-data/framework-state.json");
+    }
+
+    class FrameworkState
+    {
+        public DateTime Date { get; set; }
+        public string Version { get; set; }
+        public string Build { get; set; }
+        public string Summary { get; set; }
+    }
+
+    private void OnCurrentInfo()
+    {
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        currentAssemblyName = assembly.FullName;
+    }
+}
